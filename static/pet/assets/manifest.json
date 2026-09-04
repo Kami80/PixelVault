@@ -1,0 +1,18 @@
+{
+  "animations": {
+    "idle": "idle",
+    "walk": [
+      "north",
+      "south",
+      "east",
+      "west",
+      "northeast",
+      "northwest",
+      "southeast",
+      "southwest"
+    ],
+    "work": "work",
+    "think": "think",
+    "celebrate": "celebrate"
+  }
+}

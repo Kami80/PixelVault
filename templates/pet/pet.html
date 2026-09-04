@@ -1,0 +1,118 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#11102a" />
+  <title>{{ pet.name }} — PixelVault Pet Agent</title>
+  <link rel="icon" href="{% static 'pixelvault/assets/mascot-cat.webp' %}" type="image/webp" />
+  <link rel="stylesheet" href="{% static 'pixelvault/css/styles.css' %}?v={{ pv_version }}" />
+  <link rel="stylesheet" href="{% static 'pet/pet.css' %}?v={{ pv_version }}" />
+</head>
+<body class="pet-body">
+  <header class="pet-topbar">
+    <a class="pet-brand" href="{% url 'app' %}" aria-label="Back to PixelVault workspace">
+      <img src="{% static 'pixelvault/assets/pixelvault-logo.webp' %}" alt="PixelVault" />
+      <span><small>COMPANION MODE</small><b>PET AGENT</b></span>
+    </a>
+    <div class="pet-topbar-actions">
+      <span class="pet-online"><i></i> LOCAL MEMORY ONLINE</span>
+      <a class="neo-btn small" href="{% url 'app' %}">← WORKSPACE</a>
+    </div>
+  </header>
+
+  <main class="pet-shell">
+    <section class="pet-profile-card panel" aria-labelledby="pet-name">
+      <div class="pet-card-heading">
+        <div><span class="eyebrow">YOUR PIXEL COMPANION</span><h1 id="pet-name">{{ pet.name }}</h1></div>
+        <span class="pet-level">LVL {{ pet.level }}</span>
+      </div>
+      <div class="pet-stage" id="pet-stage" data-emotion="{{ pet.current_state|default:'idle' }}">
+        <div class="pet-stage-grid" aria-hidden="true"></div>
+        <div class="pet-orbit orbit-one" aria-hidden="true"></div>
+        <div class="pet-orbit orbit-two" aria-hidden="true"></div>
+        <img id="pet-avatar" src="{% static 'pixelvault/assets/mascot-cat.webp' %}" alt="{{ pet.name }}, your PixelVault companion" />
+        <div class="pet-speech" id="pet-speech">Ready when you are. Let’s build something useful.</div>
+        <span class="pet-state" id="pet-state">{{ pet.current_state|default:'idle'|upper }}</span>
+      </div>
+
+      <div class="pet-xp-row"><div><span>EXPERIENCE</span><b>{{ pet.xp }} XP</b></div><div class="pet-xp-track"><i style="--pet-value:{{ pet.xp|default:0 }}"></i></div></div>
+      <div class="pet-stat-list" aria-label="Companion stats">
+        <div><span>HAPPINESS</span><b>{{ pet.happiness }}%</b><i><em style="width:{{ pet.happiness }}%"></em></i></div>
+        <div><span>ENERGY</span><b>{{ pet.energy }}%</b><i><em style="width:{{ pet.energy }}%"></em></i></div>
+        <div><span>CURIOSITY</span><b>{{ pet.curiosity }}%</b><i><em style="width:{{ pet.curiosity }}%"></em></i></div>
+        <div><span>FOCUS</span><b>{{ pet.focus }}%</b><i><em style="width:{{ pet.focus }}%"></em></i></div>
+      </div>
+      <div class="pet-profile-note"><span>✦</span><p>{{ pet.name }} can inspect and safely update your full workspace database, including projects, ideas, tasks, skills, annotations, memories, and saved chats.</p></div>
+    </section>
+
+    <section class="pet-chat-card panel" aria-labelledby="pet-chat-title">
+      <div class="pet-card-heading chat-heading">
+        <div><span class="eyebrow">CHAT WITH {{ pet.name|upper }}</span><h2 id="pet-chat-title">{{ active_chat.title }}</h2></div>
+        <span id="pet-provider-badge" class="settings-badge {% if remote_ai_enabled %}safe{% endif %}">{% if remote_ai_enabled %}NEMOTRON READY{% else %}LOCAL MODE{% endif %}</span>
+      </div>
+      <div id="pet-chat" class="pet-chat-log" role="log" aria-live="polite" aria-relevant="additions">
+        {% if not conversations %}<article class="pet-message pet-message-agent"><img src="{% static 'pixelvault/assets/mascot-cat.webp' %}" alt="" /><div><small>{{ pet.name|upper }} · NEW CHAT</small><p>This is a fresh conversation. Your older chats and workspace objects are still safely available.</p></div></article>{% endif %}
+        {% for conversation in conversations reversed %}
+          <article class="pet-message pet-message-user"><div><small>YOU</small><p>{{ conversation.user_message }}</p></div></article>
+          <article class="pet-message pet-message-agent"><img src="{% static 'pixelvault/assets/mascot-cat.webp' %}" alt="" /><div><small>{{ pet.name|upper }} · {{ conversation.emotion|upper }}</small><p>{{ conversation.pet_response }}</p>{% if conversation.objects %}<div class="pet-object-links">{% for object in conversation.objects %}<div class="pet-object-card" data-object-type="{{ object.type }}" data-object-id="{{ object.id }}"><a class="pet-object-main" href="{{ object.url }}" aria-label="Open {{ object.type }} {{ object.title }} in PixelVault"><span>{{ object.type|upper }}</span><span class="pet-object-copy"><strong>{{ object.title }}</strong><small>{{ object.meta }}</small></span><i>OPEN ↗</i></a>{% if object.actions %}<div class="pet-object-actions">{% for action in object.actions %}<button type="button" data-object-action="{{ action.id }}" data-object-value="{{ action.value|default:'' }}" class="{% if action.tone %}{{ action.tone }}{% endif %}">{{ action.label }}</button>{% endfor %}</div>{% endif %}</div>{% endfor %}</div>{% endif %}</div></article>
+        {% endfor %}
+      </div>
+      <div class="pet-suggestions" aria-label="Suggested prompts">
+        <button type="button" data-pet-prompt="What projects need my attention?">PROJECT CHECK</button>
+        <button type="button" data-pet-prompt="Help me choose my next task.">NEXT TASK</button>
+        <button type="button" data-pet-prompt="Add an idea: ">ADD IDEA</button>
+        <button type="button" data-pet-prompt="Add a task: ">ADD TASK</button>
+      </div>
+      <form id="pet-chat-form" class="pet-chat-form" novalidate>
+        {% csrf_token %}
+        <label for="pet-message">MESSAGE</label>
+        <div class="pet-composer">
+          <textarea id="pet-message" rows="3" maxlength="1000" placeholder="Try “show active projects,” “mark this done,” or “add an idea…”" required></textarea>
+          <button id="pet-send" class="neo-btn pink" type="submit"><span>SEND</span><i aria-hidden="true">↗</i></button>
+        </div>
+        <div class="pet-composer-meta"><span id="pet-chat-status" role="status">Enter to send · Shift+Enter for a new line</span><span id="pet-char-count">0 / 1000</span></div>
+      </form>
+    </section>
+
+    <aside class="pet-memory-card pet-context-card panel" aria-label="Chat history and memory">
+      <section class="pet-history-section" aria-labelledby="pet-history-title">
+        <div class="pet-card-heading history-heading"><div><span class="eyebrow">CONVERSATIONS</span><h2 id="pet-history-title">CHAT HISTORY</h2></div><form method="post" action="{% url 'pet_chat_new' %}">{% csrf_token %}<button class="neo-btn small" type="submit">+ NEW CHAT</button></form></div>
+        <nav class="pet-chat-list" aria-label="Saved pet chats">
+          {% for chat in chat_sessions %}
+            <a href="{% url 'pet' %}?chat={{ chat.id }}" class="{% if chat.id == active_chat.id %}active{% endif %}" {% if chat.id == active_chat.id %}aria-current="page"{% endif %} data-chat-id="{{ chat.id }}"><span><b>{{ chat.title }}</b><small class="pet-chat-meta">{{ chat.message_count }} message{{ chat.message_count|pluralize }} · {{ chat.updated_at|date:"M j, H:i" }}</small></span><i>›</i></a>
+          {% endfor %}
+        </nav>
+      </section>
+      <section class="pet-memory-section" aria-labelledby="pet-memory-title">
+      <div class="pet-card-heading memory-heading"><div><span class="eyebrow">LONG-TERM CONTEXT</span><h2 id="pet-memory-title">MEMORY VAULT</h2></div><button id="pet-memory-refresh" class="icon-btn" type="button" title="Refresh memories" aria-label="Refresh memories">↻</button></div>
+      <p class="pet-memory-intro">Only memories tied to your signed-in account appear here.</p>
+      <div id="pet-memory-list" class="pet-memory-list">
+        {% for memory in memories %}
+          <article><span>{{ memory.memory_type|upper }}</span><p>{{ memory.content }}</p><small>IMPORTANCE {{ memory.importance }}</small></article>
+        {% empty %}
+          <div class="pet-memory-empty"><span>◇</span><b>NO MEMORIES YET</b><p>Your companion’s durable context will appear here.</p></div>
+        {% endfor %}
+      </div>
+      </section>
+      <div class="pet-privacy-note"><span>▣</span><div><b>ACCOUNT-SCOPED ACCESS</b><small>Workspace records stay isolated by account. Stored credentials, raw SQL, and configured local paths remain outside the agent’s database tools.</small></div></div>
+    </aside>
+  </main>
+
+  <script>
+    window.PIXEL_PET_CONFIG = {
+      chatUrl: "{% url 'pet_chat' %}",
+      chatId: "{{ active_chat.id }}",
+      objectActionUrl: "{% url 'pet_object_action' %}",
+      memoryUrl: "{% url 'pet_memory' %}",
+      workspaceUrl: "{% url 'app' %}",
+      remoteConfigured: {{ remote_ai_enabled|yesno:"true,false" }},
+      remoteModel: "{{ remote_ai_model|escapejs }}",
+      petName: "{{ pet.name|escapejs }}",
+      avatarUrl: "{% static 'pixelvault/assets/mascot-cat.webp' %}"
+    };
+  </script>
+  <script src="{% static 'pet/pet.js' %}?v={{ pv_version }}" defer></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>First Run Setup — PixelVault</title>
+  <link rel="icon" href="{% static 'pixelvault/assets/pixelvault-logo.webp' %}" type="image/webp">
+  <link rel="stylesheet" href="{% static 'pixelvault/css/styles.css' %}?v={{ pv_version }}">
+</head>
+<body class="auth-body">
+  <main class="auth-shell setup-shell">
+    <section class="auth-art panel">
+      <img src="{% static 'pixelvault/assets/pixelvault-logo.webp' %}" class="auth-logo" alt="PixelVault">
+      <div class="auth-copy">
+        <span class="eyebrow">FIRST RUN</span>
+        <h1>CREATE YOUR VAULT.</h1>
+        <p>Create the first owner account, name your workspace, and start with a clean private productivity system.</p>
+        <div class="setup-steps"><div class="active"><b>01</b><span>OWNER</span></div><div><b>02</b><span>WORKSPACE</span></div><div><b>03</b><span>BUILD</span></div></div>
+      </div>
+      <img src="{% static 'pixelvault/assets/mascot-robot.webp' %}" class="auth-mascot" alt="Pixel robot">
+    </section>
+    <section class="auth-card panel">
+      <div class="auth-card-head"><div><span class="eyebrow">WORKSPACE BOOTSTRAP</span><h2>OWNER PROFILE</h2></div><span class="settings-badge">FIRST RUN</span></div>
+      <form method="post" class="auth-form">
+        {% csrf_token %}
+        {% for field in form %}
+          {% if field.name == 'seed_examples' %}
+            <label class="setting-toggle-card"><div><b>{{ field.label }}</b><small>Useful example idea, project, task and skill.</small></div>{{ field }}</label>
+          {% else %}
+            <label>{{ field.label }}
+              <input class="retro-input" type="{% if 'password' in field.name %}password{% else %}text{% endif %}" name="{{ field.name }}" value="{% if field.value and 'password' not in field.name %}{{ field.value }}{% endif %}" {% if field.field.required %}required{% endif %}>
+              {% if field.help_text %}<small class="muted form-help">{{ field.help_text|safe }}</small>{% endif %}
+              {% for error in field.errors %}<small class="form-error-inline">{{ error }}</small>{% endfor %}
+            </label>
+          {% endif %}
+        {% endfor %}
+        <button class="neo-btn lime" type="submit">INITIALIZE PIXELVAULT →</button>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

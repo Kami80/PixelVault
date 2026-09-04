@@ -1,0 +1,7 @@
+{
+  "idle": ["idle_01", "idle_02"],
+  "walk": ["north", "south", "east", "west"],
+  "work": ["work_01"],
+  "think": ["think_01"],
+  "celebrate": ["celebrate_01"]
+}

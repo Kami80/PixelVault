@@ -1,0 +1,115 @@
+# ==================================================
+# Python
+# ==================================================
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+
+# ==================================================
+# Django
+# ==================================================
+
+# Local database
+*.sqlite3
+*.db
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Static & Media
+staticfiles/
+static_root/
+media/
+
+# Logs
+*.log
+
+# Cache
+*.cache
+
+
+# ==================================================
+# User Uploads / Generated Files
+# ==================================================
+
+uploads/
+
+# Project archives
+*.zip
+*.rar
+*.7z
+
+
+# ==================================================
+# Documentation / Temporary Notes
+# ==================================================
+
+# Keep only the main README
+!README.md
+
+# Internal documentation
+FINAL-UPGRADE-NOTES.md
+FINAL_PRODUCTION_BUILD.md
+PET-AGENT-FINAL.md
+PET-AGENT-V1.3.md
+README_SQLITE_SETUP.md
+
+# Temporary structure / analysis files
+API.txt
+clean_tree.txt
+project_tree.txt
+
+
+# ==================================================
+# IDE / Editors
+# ==================================================
+
+.vscode/
+.idea/
+
+
+# ==================================================
+# Operating System
+# ==================================================
+
+.DS_Store
+Thumbs.db
+
+
+# ==================================================
+# Testing
+# ==================================================
+
+.pytest_cache/
+.coverage
+htmlcov/
+
+
+# ==================================================
+# Frontend (if added later)
+# ==================================================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+dist/
+build/
+
+
+# ==================================================
+# Django Migrations Cache
+# ==================================================
+
+*/migrations/__pycache__/

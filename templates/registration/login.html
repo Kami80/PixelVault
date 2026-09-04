@@ -1,0 +1,63 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login — PixelVault</title>
+  <link rel="icon" href="{% static 'pixelvault/assets/pixelvault-logo.webp' %}" type="image/webp">
+  <link rel="stylesheet" href="{% static 'pixelvault/css/styles.css' %}?v={{ pv_version }}">
+</head>
+<body class="auth-body auth-login-body">
+  <main class="auth-shell login-shell">
+    <section class="auth-art panel login-art" aria-labelledby="login-welcome">
+      <div class="login-brand-row">
+        <img src="{% static 'pixelvault/assets/pixelvault-logo.webp' %}" class="auth-logo" alt="PixelVault">
+        <span class="login-local-state"><i aria-hidden="true"></i> LOCAL VAULT</span>
+      </div>
+      <div class="login-art-content">
+        <div class="auth-copy">
+          <span class="eyebrow">DJANGO WORKSPACE</span>
+          <h1 id="login-welcome">WELCOME<br><span>BACK.</span></h1>
+          <p>Your ideas, projects, tasks, planner, skills, highlights, and reports stay together in one private local workspace.</p>
+          <div class="auth-feature-row" aria-label="Workspace features"><span>● LOCAL FIRST</span><span>◆ DJANGO + SQLITE</span><span>✦ PRIVATE WORKSPACE</span></div>
+        </div>
+        <img src="{% static 'pixelvault/assets/mascot-cat.webp' %}" class="auth-mascot" alt="PixelVault companion at a computer">
+      </div>
+    </section>
+    <section class="auth-card panel login-card" aria-labelledby="login-title">
+      <div class="login-card-inner">
+        <div class="auth-card-head">
+          <div><span class="eyebrow">SECURE SESSION</span><h2 id="login-title">OPEN <span>PIXELVAULT</span></h2><p>Sign in to continue where you left off.</p></div>
+          <span class="login-online"><i aria-hidden="true"></i> ONLINE</span>
+        </div>
+        {% if form.errors %}<div class="form-error" role="alert"><b>LOGIN NOT ACCEPTED</b><span>Check your username and password, then try again.</span></div>{% endif %}
+        <form method="post" class="auth-form">
+          {% csrf_token %}
+          <div class="auth-field"><label class="login-field-heading" for="login-username"><span>USERNAME</span><small>01</small></label><input id="login-username" type="text" name="username" class="retro-input" autofocus autocomplete="username" required></div>
+          <div class="auth-field"><label class="login-field-heading" for="login-password"><span>PASSWORD</span><small>02</small></label><div class="password-field"><input id="login-password" type="password" name="password" class="retro-input" autocomplete="current-password" required><button id="login-password-toggle" type="button" class="password-toggle" aria-label="Show password" aria-controls="login-password" aria-pressed="false">SHOW</button></div></div>
+          {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+          <button class="neo-btn pink login-submit" type="submit"><span>ENTER WORKSPACE</span><i aria-hidden="true">→</i></button>
+        </form>
+        <div class="auth-note login-help"><span aria-hidden="true">?</span><div><b>FIRST LAUNCH?</b><p>If this database has no owner account yet, start at <a href="{% url 'first_run_setup' %}">workspace setup</a>.</p></div></div>
+        <div class="login-security-line"><span aria-hidden="true">▣</span><span>Credentials stay inside your Django session.</span></div>
+      </div>
+    </section>
+  </main>
+  <script>
+    (() => {
+      const input = document.getElementById("login-password");
+      const toggle = document.getElementById("login-password-toggle");
+      if (!input || !toggle) return;
+      toggle.addEventListener("click", () => {
+        const visible = input.type === "password";
+        input.type = visible ? "text" : "password";
+        toggle.textContent = visible ? "HIDE" : "SHOW";
+        toggle.setAttribute("aria-label", visible ? "Hide password" : "Show password");
+        toggle.setAttribute("aria-pressed", String(visible));
+        input.focus();
+      });
+    })();
+  </script>
+</body>
+</html>

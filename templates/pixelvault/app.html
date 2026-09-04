@@ -1,0 +1,454 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#17122f" />
+  <title>PIXELVAULT — Django Productivity OS</title>
+  <link rel="icon" href="{% static 'pixelvault/assets/pixelvault-logo.webp' %}" type="image/webp" />
+  <link rel="stylesheet" href="{% static 'pixelvault/css/styles.css' %}?v={{ pv_version }}" />
+</head>
+<body>
+
+  <div id="boot" class="boot-screen" aria-hidden="true">
+    <img src="{% static 'pixelvault/assets/pixelvault-logo.webp' %}" alt="" />
+    <div class="boot-copy">CONNECTING DJANGO WORKSPACE<span class="blink">_</span></div>
+    <div class="boot-bar"><i></i></div>
+  </div>
+
+  <div class="app-shell">
+    <aside id="sidebar" class="sidebar" aria-label="Workspace navigation" aria-hidden="false">
+      <div class="brand-mini">
+        <button class="brand-button" type="button" data-page-jump="home" title="PixelVault Home" aria-label="Go to PixelVault Home">
+          <img src="{% static 'pixelvault/assets/pixelvault-logo.webp' %}" alt="PixelVault" />
+        </button>
+        <button id="sidebar-collapse" class="sidebar-collapse" type="button" title="Collapse sidebar" aria-label="Collapse sidebar" aria-expanded="true"><span aria-hidden="true">«</span></button>
+      </div>
+      <div class="sidebar-scroll">
+        <button id="sidebar-create" class="sidebar-create" type="button" aria-label="Create new item"><span class="sidebar-create-plus">＋</span><span class="sidebar-create-label">QUICK CREATE</span><kbd>N</kbd></button>
+        <div class="nav-group-label"><span>WORKSPACE</span></div>
+        <nav id="nav" class="nav-stack" aria-label="Primary">
+          <button data-page="home" data-label="Home" title="Home" class="nav-item active"><span class="nav-glyph"><img src="{% static 'pixelvault/assets/nav-home.webp' %}" alt="" /></span><span class="nav-label">HOME</span></button>
+          <button data-page="ideas" data-label="Ideas" title="Ideas" class="nav-item"><span class="nav-glyph"><img src="{% static 'pixelvault/assets/nav-ideas.webp' %}" alt="" /></span><span class="nav-label">IDEAS</span><b class="nav-badge" id="nav-ideas-count">0</b></button>
+          <button data-page="projects" data-label="Projects" title="Projects" class="nav-item"><span class="nav-glyph"><img src="{% static 'pixelvault/assets/nav-projects.webp' %}" alt="" /></span><span class="nav-label">PROJECTS</span><b class="nav-badge" id="nav-projects-count">0</b></button>
+          <button data-page="tasks" data-label="Tasks" title="Tasks" class="nav-item"><span class="nav-glyph"><img src="{% static 'pixelvault/assets/nav-tasks.webp' %}" alt="" /></span><span class="nav-label">TASKS</span><b class="nav-badge" id="nav-tasks-count">0</b></button>
+          <button data-page="planner" data-label="Planner" title="Planner" class="nav-item"><span class="nav-glyph"><img src="{% static 'pixelvault/assets/nav-planner.webp' %}" alt="" /></span><span class="nav-label">PLANNER</span></button>
+          <a href="{% url 'pet' %}" data-label="Pet Agent" title="Open Pet Agent" class="nav-item nav-link"><span class="nav-glyph"><img src="{% static 'pixelvault/assets/mascot-cat.webp' %}" alt="" /></span><span class="nav-label">PET AGENT</span><b class="nav-badge pet-nav-badge">LIVE</b></a>
+        </nav>
+        <div class="nav-group-label"><span>KNOWLEDGE & REVIEW</span></div>
+        <nav class="nav-stack" aria-label="Knowledge and review">
+          <button data-page="skills" data-label="Skills.md" title="Skills.md" class="nav-item"><span class="nav-glyph"><img src="{% static 'pixelvault/assets/nav-skills.webp' %}" alt="" /></span><span class="nav-label">SKILLS.MD</span><b class="nav-badge" id="nav-skills-count">0</b></button>
+          <button data-page="reports" data-label="Reports" title="Reports" class="nav-item"><span class="nav-glyph"><img src="{% static 'pixelvault/assets/nav-reports.webp' %}" alt="" /></span><span class="nav-label">REPORTS</span></button>
+          <button data-page="annotations" data-label="Notes & Highlights" title="Notes & Highlights" class="nav-item"><span class="nav-glyph"><img src="{% static 'pixelvault/assets/nav-notes.webp' %}" alt="" /></span><span class="nav-label">NOTES</span><b class="nav-badge" id="nav-notes-count">0</b></button>
+          <button data-page="settings" data-label="Settings" title="Settings" class="nav-item"><span class="nav-glyph"><img src="{% static 'pixelvault/assets/nav-settings.webp' %}" alt="" /></span><span class="nav-label">SETTINGS</span></button>
+        </nav>
+        <section class="sidebar-block quick-access-panel" aria-labelledby="quick-access-title">
+          <div class="quick-access-heading">
+            <img src="{% static 'pixelvault/assets/quick-access-badge.webp' %}" alt="" aria-hidden="true" />
+            <span id="quick-access-title" class="sr-only">Quick Access</span>
+          </div>
+          <div class="quick-access-list">
+            <button class="quick-filter quick-pinned" data-filter="pinned" title="Show pinned items">
+              <span class="quick-icon-wrap"><img src="{% static 'pixelvault/assets/quick-pinned.webp' %}" alt="" /></span>
+              <span class="quick-copy"><strong>PINNED</strong><small>Saved favorites</small></span>
+              <b class="quick-count" id="pin-count">0</b>
+            </button>
+            <button class="quick-filter quick-today" data-filter="today" title="Open today's plan">
+              <span class="quick-icon-wrap"><img src="{% static 'pixelvault/assets/quick-today.webp' %}" alt="" /></span>
+              <span class="quick-copy"><strong>TODAY</strong><small>Scheduled now</small></span>
+              <b class="quick-count" id="today-count">0</b>
+            </button>
+            <button class="quick-filter quick-overdue" data-filter="overdue" title="Show overdue tasks">
+              <span class="quick-icon-wrap"><img src="{% static 'pixelvault/assets/quick-overdue.webp' %}" alt="" /></span>
+              <span class="quick-copy"><strong>OVERDUE</strong><small>Needs attention</small></span>
+              <b class="quick-count" id="overdue-count">0</b>
+            </button>
+          </div>
+        </section>
+        <div class="sidebar-shortcuts" aria-label="Keyboard shortcuts">
+          <img src="{% static 'pixelvault/assets/sidebar-shortcuts.webp' %}" alt="Ctrl K Search, Ctrl B Sidebar" />
+          <span class="sr-only"><kbd>Ctrl</kbd><kbd>K</kbd> Search; <kbd>Ctrl</kbd><kbd>B</kbd> Sidebar</span>
+        </div>
+      </div>
+      <button class="mascot-corner" id="sidebar-status" type="button" data-page-jump="settings" title="Open profile & settings">
+        <img id="sidebar-mascot" src="{% static 'pixelvault/assets/mascot-cat.webp' %}" alt="Pixel cat mascot" />
+        <span class="sidebar-profile-line"><strong id="sidebar-profile-name">LOCAL BUILDER</strong><small id="sidebar-workspace-name">PIXELVAULT</small></span>
+        <span class="system-line"><i class="online-dot"></i><span>SYSTEM ONLINE</span><span class="sidebar-version">v{{ pv_version }}</span></span>
+      </button>
+    </aside>
+    <button id="sidebar-backdrop" class="sidebar-backdrop" type="button" aria-label="Close navigation" hidden></button>
+
+    <main class="main-area">
+      <header class="topbar">
+        <button id="menu-toggle" class="icon-btn menu-toggle" type="button" aria-label="Toggle sidebar" aria-controls="sidebar" aria-expanded="true" title="Toggle sidebar (Ctrl+B)"><span class="hamburger" aria-hidden="true"><i></i><i></i><i></i></span></button>
+        <div class="topbar-context" aria-live="polite"><span class="micro-label">PIXELVAULT /</span><strong id="topbar-page-title">HOME</strong></div>
+        <button class="search-shell" id="global-search-shell" type="button" aria-label="Open universal search">
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <span id="global-search-display" class="search-display">Search everything or run a command…</span>
+          <kbd class="search-kbd">CTRL K</kbd>
+        </button>
+        <input id="global-search" class="visually-hidden-search" autocomplete="off" aria-label="Search PixelVault" tabindex="-1" />
+        <button id="global-search-reset" class="search-clear sr-only" type="button" aria-label="Clear search" hidden>×</button>
+        <div class="top-actions">
+          <button id="annotation-open" class="icon-btn top-action-icon" title="Notes & highlights" aria-label="Notes and highlights"><img class="toolbar-icon" src="{% static 'pixelvault/assets/nav-notes.webp' %}" alt="" /></button>
+          <button id="settings-open" class="icon-btn top-action-icon" title="Settings" aria-label="Open settings"><img class="toolbar-icon" src="{% static 'pixelvault/assets/nav-settings.webp' %}" alt="" /></button>
+          <button id="profile-chip" class="profile-chip" data-page-jump="settings" title="Open profile settings"><img id="topbar-avatar" src="{% static 'pixelvault/assets/mascot-cat.webp' %}" alt=""><span><b id="topbar-profile-name">LOCAL BUILDER</b><small id="topbar-workspace-name">PIXELVAULT</small></span></button>
+          <button id="new-any" class="neo-btn pink small quick-create">＋ CREATE</button>
+          <details class="more-menu">
+            <summary class="icon-btn" title="More actions" aria-label="More actions">•••</summary>
+            <div class="more-menu-popover">
+              <button id="export-backup" type="button">⇩ Export backup</button>
+              <label>⇧ Import backup<input id="import-backup" type="file" accept="application/json" hidden></label>
+              <button data-page-jump="settings" type="button">⚙ Workspace settings</button>
+              <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">↪ Log out</button></form>
+            </div>
+          </details>
+        </div>
+      </header>
+
+      <section id="page-home" class="page active annotatable" data-page="home">
+        <div class="hero-panel">
+          <div class="hero-copy">
+            <div class="eyebrow">DJANGO-BACKED PRODUCTIVITY OS</div>
+            <h1>BUILD. PLAN. SHIP.</h1>
+            <p>Select any text across the workspace to highlight it or attach a comment. Your workspace is stored in Django + SQLite. Project folder scans happen only on the computer running the Django server.</p>
+            <div class="hero-actions">
+              <button class="neo-btn pink" data-create="task">＋ NEW TASK</button>
+              <button class="neo-btn cyan" data-page-jump="planner">OPEN PLANNER</button>
+              <button class="neo-btn lime" data-create="idea">CAPTURE IDEA</button>
+            </div>
+          </div>
+          <img src="{% static 'pixelvault/assets/mascot-fox.webp' %}" alt="Pixel fox inventor" class="hero-mascot" />
+        </div>
+
+        <section class="today-brief panel" id="today-brief" aria-label="Today briefing">
+          <div class="today-brief-main"><span class="eyebrow">TODAY'S MISSION</span><h2 id="brief-title">YOUR DAY IS READY.</h2><p id="brief-copy" class="muted"></p></div>
+          <div class="today-brief-metrics" id="brief-metrics"></div>
+          <div class="today-brief-actions"><button class="neo-btn lime small" data-page-jump="planner">PLAN TODAY</button><button class="neo-btn small" data-create="task">QUICK TASK</button></div>
+        </section>
+
+        <div class="stat-grid" id="home-stats"></div>
+        <div class="pixel-icon-ribbon"><div class="ribbon-icons" aria-hidden="true"><img src="{% static 'pixelvault/assets/nav-ideas.webp' %}" alt=""><img src="{% static 'pixelvault/assets/nav-projects.webp' %}" alt=""><img src="{% static 'pixelvault/assets/nav-tasks.webp' %}" alt=""><img src="{% static 'pixelvault/assets/nav-planner.webp' %}" alt=""><img src="{% static 'pixelvault/assets/nav-skills.webp' %}" alt=""><img src="{% static 'pixelvault/assets/nav-reports.webp' %}" alt=""></div><span>IDEAS · PROJECTS · TASKS · PLANNER · SKILLS · REPORTS</span></div>
+
+        <div class="dashboard-grid">
+          <article class="panel">
+            <div class="panel-head"><h2>★ PINNED</h2><button class="text-btn" data-page-jump="tasks">VIEW TASKS →</button></div>
+            <div id="home-pinned" class="stack-list"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><h2>▣ TODAY</h2><span id="today-date"></span></div>
+            <div id="home-today" class="timeline-mini"></div>
+          </article>
+          <article class="panel panel-wide">
+            <div class="panel-head"><h2>◈ ACTIVE PROJECTS</h2><button class="text-btn" data-page-jump="projects">ALL PROJECTS →</button></div>
+            <div id="home-projects" class="card-row"></div>
+          </article>
+          <article class="panel panel-wide banner-panel">
+            <div class="banner-copy"><span class="eyebrow">MONTHLY MOMENTUM</span><h2 id="momentum-title">KEEP BUILDING.</h2><p id="momentum-copy"></p></div>
+            <img src="{% static 'pixelvault/assets/city-banner.webp' %}" alt="Pixel city at sunset" />
+          </article>
+        </div>
+      </section>
+
+      <section id="page-ideas" class="page annotatable" data-page="ideas">
+        <div class="page-head">
+          <div><span class="eyebrow">CAPTURE → DEVELOP → BUILD</span><h1>IDEA LAB</h1><p>Store raw ideas, webpage concepts, prompts, references and next actions.</p></div>
+          <div style="display:flex;align-items:center;gap:10px"><img src="{% static 'pixelvault/assets/mascot-fox.webp' %}" alt="Pixel fox inventor" class="page-mascot"><button class="neo-btn pink" data-create="idea">＋ NEW IDEA</button></div>
+        </div>
+        <div class="collection-toolbar panel">
+          <div class="collection-toolbar-left"><div class="segmented" id="idea-status-filter">
+            <button class="active" data-value="all">ALL</button><button data-value="inbox">INBOX</button><button data-value="exploring">EXPLORING</button><button data-value="ready">READY</button><button data-value="building">BUILDING</button>
+          </div></div>
+          <div class="collection-toolbar-right">
+            <label class="toolbar-search"><span>⌕</span><input id="idea-search" class="retro-input compact" placeholder="Search ideas, prompts, tags…" /></label>
+            <select id="idea-sort" class="retro-select compact-select" aria-label="Sort ideas"><option value="updated">Recently updated</option><option value="priority">Priority</option><option value="title">A–Z</option></select>
+            <div class="view-switch" id="idea-view"><button type="button" class="active" data-view="grid" title="Grid view">▦</button><button type="button" data-view="list" title="List view">☷</button></div>
+          </div>
+        </div>
+        <div id="ideas-grid" class="cards-grid"></div>
+      </section>
+
+      <section id="page-projects" class="page annotatable" data-page="projects">
+        <div class="page-head">
+          <div><span class="eyebrow">LOCAL PROJECT LIBRARY</span><h1>PROJECTS</h1><p>Connect folders, inspect files, save launch URLs, track status, notes and tags.</p></div>
+          <div style="display:flex;align-items:center;gap:10px"><img src="{% static 'pixelvault/assets/mascot-robot.webp' %}" alt="Pixel project robot" class="page-mascot"><button class="neo-btn cyan" data-create="project">＋ NEW PROJECT</button></div>
+        </div>
+        <div id="project-overview" class="collection-overview"></div>
+        <div class="collection-toolbar panel">
+          <div class="segmented" id="project-status-filter"><button class="active" data-value="all">ALL</button><button data-value="active">ACTIVE</button><button data-value="paused">PAUSED</button><button data-value="done">DONE</button></div>
+          <div class="collection-toolbar-right">
+            <label class="toolbar-search"><span>⌕</span><input id="project-search" class="retro-input compact" placeholder="Search projects, stack, tags…" /></label>
+            <select id="project-sort" class="retro-select compact-select" aria-label="Sort projects"><option value="updated">Recently updated</option><option value="progress">Progress</option><option value="deadline">Deadline</option><option value="title">A–Z</option></select>
+          </div>
+        </div>
+        <div id="projects-grid" class="project-grid"></div>
+      </section>
+
+      <section id="page-tasks" class="page annotatable" data-page="tasks">
+        <div class="page-head">
+          <div><span class="eyebrow">EXECUTION LAYER</span><h1>TASKS</h1><p>Prioritize, schedule, pin, group and complete work across all projects.</p></div>
+          <div style="display:flex;align-items:center;gap:10px"><img src="{% static 'pixelvault/assets/mascot-ghost.webp' %}" alt="Pixel task mascot" class="page-mascot"><button class="neo-btn lime" data-create="task">＋ NEW TASK</button></div>
+        </div>
+        <div class="task-summary" id="task-summary"></div>
+        <div class="collection-toolbar panel task-toolbar">
+          <div class="segmented" id="task-status-filter"><button class="active" data-value="all">ALL</button><button data-value="todo">TO DO</button><button data-value="doing">DOING</button><button data-value="done">DONE</button></div>
+          <div class="collection-toolbar-right">
+            <select id="task-smart-filter" class="retro-select compact-select"><option value="all">All tasks</option><option value="today">Today</option><option value="overdue">Overdue</option><option value="pinned">Pinned</option><option value="unscheduled">Unscheduled</option></select>
+            <select id="task-project-filter" class="retro-select compact-select"><option value="all">All projects</option></select>
+            <select id="task-priority-filter" class="retro-select compact-select"><option value="all">All priorities</option><option>high</option><option>medium</option><option>low</option></select>
+            <label class="toolbar-search"><span>⌕</span><input id="task-search" class="retro-input compact" placeholder="Search tasks…" /></label>
+            <div class="view-switch" id="task-view"><button type="button" class="active" data-view="board" title="Kanban board">▦</button><button type="button" data-view="list" title="Task list">☷</button></div>
+          </div>
+        </div>
+        <div id="task-board" class="task-board"></div>
+      </section>
+
+      <section id="page-planner" class="page annotatable" data-page="planner">
+        <div class="page-head planner-head">
+          <div><span class="eyebrow">TIME-BLOCK YOUR WORK</span><h1>PLANNER</h1><p>Daily execution, weekly planning and calendar scheduling from one place.</p></div>
+          <div style="display:flex;align-items:center;gap:12px"><img src="{% static 'pixelvault/assets/mascot-slime.webp' %}" alt="Pixel planner slime" class="page-mascot"><div class="planner-controls">
+            <button id="planner-prev" class="icon-btn">‹</button><button id="planner-today" class="neo-btn small">TODAY</button><button id="planner-next" class="icon-btn">›</button>
+          </div></div>
+        </div>
+        <div class="planner-toolbar">
+          <div class="segmented" id="planner-view"><button data-value="daily">DAILY</button><button class="active" data-value="weekly">WEEKLY</button><button data-value="calendar">CALENDAR</button></div>
+          <h2 id="planner-range"></h2>
+          <button id="planner-add-task" class="neo-btn lime small">＋ ADD TASK</button>
+        </div>
+        <div class="planner-commandbar panel">
+          <label class="planner-jump">JUMP TO <input id="planner-date-jump" type="date" class="retro-input"></label>
+          <label>PROJECT <select id="planner-project-filter" class="retro-select"><option value="all">All projects</option></select></label>
+          <label class="planner-toggle"><input id="planner-hide-done" type="checkbox"> <span>Hide completed</span></label>
+          <label>SNAP <select id="planner-snap" class="retro-select planner-snap"><option value="15">15 min</option><option value="30">30 min</option><option value="60">60 min</option></select></label>
+          <div class="planner-zoom" aria-label="Planner timeline zoom"><span>ZOOM</span><button id="planner-zoom-out" type="button" class="icon-btn small" title="Zoom out">−</button><b id="planner-zoom-label">100%</b><button id="planner-zoom-in" type="button" class="icon-btn small" title="Zoom in">＋</button></div>
+          <button id="planner-reschedule-overdue" class="neo-btn small">↻ MOVE OVERDUE TO TODAY</button>
+          <button id="planner-clear-filters" class="text-btn">RESET FILTERS</button>
+        </div>
+        <div id="planner-summary" class="planner-summary"></div>
+        <div class="planner-layout">
+          <aside id="planning-inbox-panel" class="planning-inbox panel planner-unschedule-drop">
+            <div class="panel-head"><div><h2>PLANNING INBOX</h2><small class="muted">Unscheduled work · drop a task here to unschedule</small></div><span>↔</span></div>
+            <input id="planner-inbox-search" class="retro-input" placeholder="Filter inbox tasks..." aria-label="Filter planning inbox">
+            <div id="planning-inbox" class="stack-list planner-inbox-list"></div>
+            <button id="planner-add-inbox" class="neo-btn small">＋ QUICK INBOX TASK</button>
+          </aside>
+          <div id="planner-canvas" class="planner-canvas"></div>
+        </div>
+      </section>
+
+      <section id="page-skills" class="page annotatable" data-page="skills">
+        <div class="page-head">
+          <div><span class="eyebrow">AGENT KNOWLEDGE LIBRARY</span><h1>SKILLS.MD</h1><p>Each skill has metadata plus an editable Markdown file you can attach, save and download.</p></div>
+          <div style="display:flex;align-items:center;gap:10px"><img src="{% static 'pixelvault/assets/mascot-owl.webp' %}" alt="Pixel skill owl" class="page-mascot"><button class="neo-btn violet" data-create="skill">＋ NEW SKILL</button></div>
+        </div>
+        <div class="skills-layout">
+          <aside class="skills-sidebar panel">
+            <div class="skills-sidebar-head"><label class="toolbar-search full"><span>⌕</span><input id="skill-search" class="retro-input" placeholder="Search skills, agents, tags…" /></label><button class="neo-btn violet small" data-create="skill">＋</button></div>
+            <div class="skills-filter-row"><select id="skill-category-filter" class="retro-select"><option value="all">All categories</option></select><label class="mini-check"><input id="skill-pinned-only" type="checkbox"> PINNED</label></div>
+            <div id="skill-list-count" class="list-count muted"></div>
+            <div id="skills-list" class="skills-list"></div>
+          </aside>
+          <article id="skill-editor" class="skill-editor panel"></article>
+        </div>
+      </section>
+
+      <section id="page-reports" class="page annotatable" data-page="reports">
+        <div class="page-head">
+          <div><span class="eyebrow">EXPORT YOUR MOMENTUM</span><h1>REPORT STUDIO</h1><p>Create a social-media image or a long retro-professional PDF from your completed work.</p></div>
+          <img src="{% static 'pixelvault/assets/mascot-raccoon.webp' %}" alt="Pixel analytics raccoon" class="page-mascot" />
+        </div>
+        <div class="report-layout">
+          <article class="panel report-controls">
+            <div class="panel-head"><div><span class="eyebrow">EXPORT CONFIG</span><h2>REPORT SETTINGS</h2></div><span class="settings-badge safe">LOCAL</span></div>
+            <div class="segmented report-period-switch" id="report-period-switch"><button type="button" data-report-period="daily" class="active">DAY</button><button type="button" data-report-period="weekly">WEEK</button><button type="button" data-report-period="monthly">MONTH</button></div>
+            <label>Period<select id="report-period" class="retro-select"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select></label>
+            <label>Reference date<input id="report-date" type="date" class="retro-input" /></label>
+            <label>Privacy<select id="report-privacy" class="retro-select"><option value="full">Private / full detail</option><option value="public">Public-safe</option><option value="showcase">Showcase only</option></select></label>
+            <label>Signature<input id="report-signature" class="retro-input" placeholder="@yourhandle or workspace" /></label>
+            <div class="button-stack">
+              <button id="download-social" class="neo-btn pink">DOWNLOAD SOCIAL PNG</button>
+              <button id="download-pdf" class="neo-btn cyan">DOWNLOAD LONG PDF</button>
+            </div>
+            <p class="muted">Reports are generated locally from your task data. No upload is required.</p>
+          </article>
+          <article class="panel report-preview-shell">
+            <div class="panel-head"><h2>LIVE SUMMARY</h2><span id="report-range-label"></span></div>
+            <div id="report-preview" class="report-preview"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="page-annotations" class="page annotatable" data-page="annotations">
+        <div class="page-head">
+          <div><span class="eyebrow">CONTEXTUAL MEMORY</span><h1>NOTES & HIGHLIGHTS</h1><p>Your selected-text highlights and comments across every section of PixelVault.</p></div>
+          <img src="{% static 'pixelvault/assets/mascot-ghost.webp' %}" alt="Pixel task ghost" class="page-mascot" />
+        </div>
+        <div class="annotation-summary" id="annotation-summary"></div>
+        <div class="collection-toolbar panel">
+          <div class="collection-toolbar-left"><select id="annotation-page-filter" class="retro-select"><option value="all">All pages</option></select><select id="annotation-color-filter" class="retro-select"><option value="all">All colors</option><option value="yellow">Yellow</option><option value="pink">Pink</option><option value="cyan">Cyan</option><option value="lime">Lime</option></select></div>
+          <div class="collection-toolbar-right"><label class="toolbar-search"><span>⌕</span><input id="annotation-search" class="retro-input compact" placeholder="Search highlights & comments…"></label><button id="clear-annotations" class="neo-btn small danger">CLEAR ALL</button></div>
+        </div>
+        <div id="annotations-list" class="annotation-list"></div>
+      </section>
+
+      <section id="page-settings" class="page annotatable" data-page="settings">
+        <div class="page-head">
+          <div><span class="eyebrow">PERSONALIZE YOUR WORKSPACE</span><h1>SETTINGS</h1><p>Profile, workspace identity, themes, planning defaults, accessibility, annotations, Django storage and privacy controls.</p></div>
+          <img src="{% static 'pixelvault/assets/mascot-cat.webp' %}" alt="Pixel settings mascot" class="page-mascot" id="settings-page-mascot" />
+        </div>
+
+        <div class="settings-layout">
+          <aside class="settings-index panel" aria-label="Settings sections">
+            <div class="settings-profile-mini">
+              <img id="settings-mini-avatar" src="{% static 'pixelvault/assets/mascot-cat.webp' %}" alt="">
+              <div><b id="settings-mini-name">LOCAL BUILDER</b><small id="settings-mini-workspace">PIXELVAULT</small></div>
+            </div>
+            <button data-settings-target="settings-profile">👤 PROFILE & WORKSPACE</button>
+            <button data-settings-target="settings-appearance">✦ APPEARANCE</button>
+            <button data-settings-target="settings-workflow">▦ PLANNER & WORKFLOW</button>
+            <button data-settings-target="settings-annotations">✎ HIGHLIGHTS & NOTES</button>
+            <button data-settings-target="settings-accessibility">◉ ACCESSIBILITY & UX</button>
+            <button data-settings-target="settings-data">▣ DATA & PRIVACY</button>
+            <div class="settings-shortcuts"><span class="micro-label">SHORTCUTS</span><small><kbd>Ctrl</kbd> + <kbd>K</kbd> Search</small><small><kbd>Ctrl</kbd> + <kbd>,</kbd> Settings</small><small><kbd>Esc</kbd> Close popups</small></div>
+          </aside>
+
+          <div class="settings-content">
+            <article id="settings-profile" class="panel settings-section">
+              <div class="settings-section-head"><div><span class="eyebrow">IDENTITY</span><h2>PROFILE & WORKSPACE</h2><p>Used inside PixelVault and as the default identity for reports.</p></div><span class="settings-badge">ACCOUNT</span></div>
+              <div class="profile-settings-grid">
+                <div class="settings-fields">
+                  <label>Display name<input id="setting-display-name" class="retro-input" maxlength="60" placeholder="Your name or alias"></label>
+                  <label>Role / title<input id="setting-role" class="retro-input" maxlength="80" placeholder="Builder, researcher, designer..."></label>
+                  <label>Workspace name<input id="setting-workspace-name" class="retro-input" maxlength="60" placeholder="PixelVault"></label>
+                  <label>Social handle<input id="setting-social-handle" class="retro-input" maxlength="60" placeholder="@yourhandle"></label>
+                  <label>Profile mascot<select id="setting-avatar" class="retro-select"><option value="mascot-cat.webp">Coding Cat</option><option value="mascot-fox.webp">Idea Fox</option><option value="mascot-robot.webp">Project Robot</option><option value="mascot-ghost.webp">Task Ghost</option><option value="mascot-slime.webp">Planner Slime</option><option value="mascot-owl.webp">Skills Owl</option><option value="mascot-raccoon.webp">Report Raccoon</option></select></label>
+                  <label class="full">Short bio<textarea id="setting-bio" class="retro-textarea" rows="4" maxlength="280" placeholder="What are you building and why?"></textarea></label>
+                </div>
+                <div class="profile-preview-card">
+                  <span class="micro-label">PROFILE PREVIEW</span>
+                  <img id="profile-preview-avatar" src="{% static 'pixelvault/assets/mascot-cat.webp' %}" alt="">
+                  <h3 id="profile-preview-name">LOCAL BUILDER</h3>
+                  <p id="profile-preview-role">Maker / Builder</p>
+                  <div class="chip" id="profile-preview-workspace">PIXELVAULT</div>
+                  <small id="profile-preview-handle"></small>
+                </div>
+              </div>
+            </article>
+
+            <article id="settings-appearance" class="panel settings-section">
+              <div class="settings-section-head"><div><span class="eyebrow">VISUAL SYSTEM</span><h2>APPEARANCE</h2><p>Switch instantly between light and dark retro palettes without losing the PixelVault identity.</p></div><button id="reset-appearance" class="neo-btn small">RESET APPEARANCE</button></div>
+              <div id="theme-grid" class="theme-grid"></div>
+              <div class="settings-row-grid">
+                <label>Accent color<select id="setting-accent" class="retro-select"><option value="pink">Hot Pink</option><option value="cyan">Electric Cyan</option><option value="lime">Acid Lime</option><option value="yellow">Arcade Yellow</option><option value="violet">Pixel Violet</option><option value="orange">Sunset Orange</option></select></label>
+                <label>Interface density<select id="setting-density" class="retro-select"><option value="comfortable">Comfortable</option><option value="compact">Compact</option></select></label>
+                <label>Text size<select id="setting-text-size" class="retro-select"><option value="normal">Normal</option><option value="large">Large · recommended</option><option value="xlarge">Extra large</option></select></label>
+              </div>
+            </article>
+
+            <article id="settings-workflow" class="panel settings-section">
+              <div class="settings-section-head"><div><span class="eyebrow">DEFAULT BEHAVIOR</span><h2>PLANNER & WORKFLOW</h2><p>Choose how PixelVault opens and how your planning day is structured.</p></div></div>
+              <div class="settings-row-grid three">
+                <label>Start page<select id="setting-landing-page" class="retro-select"><option value="home">Home</option><option value="ideas">Ideas</option><option value="projects">Projects</option><option value="tasks">Tasks</option><option value="planner">Planner</option><option value="skills">Skills.md</option><option value="reports">Reports</option></select></label>
+                <label>Default planner view<select id="setting-planner-default" class="retro-select"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="calendar">Calendar</option></select></label>
+                <label>Week starts<select id="setting-week-start" class="retro-select"><option value="monday">Monday</option><option value="sunday">Sunday</option></select></label>
+                <label>Workday starts<input id="setting-workday-start" type="number" min="0" max="23" class="retro-input"></label>
+                <label>Workday ends<input id="setting-workday-end" type="number" min="1" max="24" class="retro-input"></label>
+                <label>Default task duration (min)<input id="setting-task-duration" type="number" min="5" max="1440" step="5" class="retro-input"></label>
+              </div>
+            </article>
+
+            <article id="settings-annotations" class="panel settings-section">
+              <div class="settings-section-head"><div><span class="eyebrow">READING & REVIEW</span><h2>HIGHLIGHTS & NOTES</h2><p>Control how selection tools behave while reviewing your workspace.</p></div></div>
+              <div class="settings-row-grid">
+                <label>Default highlight<select id="setting-highlight-color" class="retro-select"><option value="yellow">Yellow</option><option value="pink">Pink</option><option value="cyan">Cyan</option><option value="lime">Lime</option></select></label>
+                <div class="setting-toggle-card"><div><b>Show saved highlights</b><small>Render your stored highlights on pages.</small></div><label class="switch"><input id="setting-show-highlights" type="checkbox"><span></span></label></div>
+              </div>
+              <div class="annotation-behavior-note">Select text → the mini toolbar appears near your selection. Click anywhere else, scroll, resize, change page, or press <kbd>Esc</kbd> and it disappears automatically.</div>
+            </article>
+
+            <article id="settings-accessibility" class="panel settings-section">
+              <div class="settings-section-head"><div><span class="eyebrow">COMFORT & FOCUS</span><h2>ACCESSIBILITY & UX</h2><p>Reduce visual noise, movement, or decorative elements whenever you need a calmer workspace.</p></div></div>
+              <div class="toggle-list">
+                <div class="setting-toggle-card"><div><b>Reduce motion</b><small>Disables most transitions, animation and smooth scrolling.</small></div><label class="switch"><input id="setting-reduce-motion" type="checkbox"><span></span></label></div>
+                <div class="setting-toggle-card"><div><b>Pixel grid texture</b><small>Show the subtle retro grid on workspace backgrounds.</small></div><label class="switch"><input id="setting-show-grid" type="checkbox"><span></span></label></div>
+                <div class="setting-toggle-card"><div><b>Show mascots</b><small>Hide decorative character artwork for a more minimal workspace.</small></div><label class="switch"><input id="setting-show-mascots" type="checkbox"><span></span></label></div>
+                <div class="setting-toggle-card"><div><b>Confirm destructive actions</b><small>Ask before deleting projects, tasks, ideas or skills.</small></div><label class="switch"><input id="setting-confirm-delete" type="checkbox"><span></span></label></div>
+                <div class="setting-toggle-card"><div><b>High contrast borders</b><small>Strengthen card, input and planner boundaries.</small></div><label class="switch"><input id="setting-high-contrast" type="checkbox"><span></span></label></div>
+                <div class="setting-toggle-card"><div><b>Larger click targets</b><small>Increase small buttons and controls for easier interaction.</small></div><label class="switch"><input id="setting-large-targets" type="checkbox"><span></span></label></div>
+              </div>
+            </article>
+
+            <article id="settings-data" class="panel settings-section">
+              <div class="settings-section-head"><div><span class="eyebrow">DJANGO BACKEND</span><h2>DATA & PRIVACY</h2><p>Workspace data is persisted in Django + SQLite. Skill attachments live in Django media storage, and project paths are read by the server under your configured workspace root.</p></div><span class="settings-badge safe">DJANGO + SQLITE</span></div>
+              <div class="data-health-grid">
+                <div><span>SQLITE DATABASE</span><b id="settings-storage-size">0 KB</b><small>estimated workspace payload</small></div>
+                <div><span>WORKSPACE ITEMS</span><b id="settings-item-count">0</b><small>ideas + projects + tasks + skills</small></div>
+                <div><span>ANNOTATIONS</span><b id="settings-annotation-count">0</b><small>highlights + comments</small></div>
+              </div>
+              <div class="storage-meter"><i id="settings-storage-meter"></i></div>
+              <div class="settings-row-grid" style="margin-top:18px">
+                <label class="full">Allowed workspace root (optional)<input id="setting-workspace-root" class="retro-input" placeholder="/home/me/projects or C:\Projects"><small class="muted">When set, Django refuses to browse project paths outside this root. Leave blank to restrict each browse request only to its configured project folder.</small></label>
+              </div>
+              <div class="data-actions">
+                <button id="settings-export-backup" class="neo-btn cyan">EXPORT FULL BACKUP</button>
+                <label class="neo-btn file-label">IMPORT BACKUP<input id="settings-import-backup" type="file" accept="application/json" hidden></label>
+                <button id="test-backend" class="neo-btn">TEST DJANGO BACKEND</button>
+                <button id="clear-workspace" class="neo-btn danger">CLEAR WORKSPACE DATA</button>
+              </div>
+              <p class="muted">Tip: export a JSON backup before large imports, resets, or database migrations.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="mobile-dock" aria-label="Mobile quick navigation">
+    <button class="active" data-page-jump="home"><img src="{% static 'pixelvault/assets/nav-home.webp' %}" alt=""><small>Home</small></button>
+    <button data-page-jump="tasks"><img src="{% static 'pixelvault/assets/nav-tasks.webp' %}" alt=""><small>Tasks</small></button>
+    <button id="mobile-create" class="mobile-create" type="button"><span>＋</span><small>New</small></button>
+    <button data-page-jump="planner"><img src="{% static 'pixelvault/assets/nav-planner.webp' %}" alt=""><small>Plan</small></button>
+    <button data-page-jump="skills"><img src="{% static 'pixelvault/assets/nav-skills.webp' %}" alt=""><small>Skills</small></button>
+  </nav>
+
+  <div id="selection-toolbar" class="selection-toolbar" hidden role="toolbar" aria-label="Text highlight and comment tools">
+    <button data-highlight="yellow" title="Yellow highlight" aria-label="Highlight yellow">●</button>
+    <button data-highlight="pink" title="Pink highlight" aria-label="Highlight pink">●</button>
+    <button data-highlight="cyan" title="Cyan highlight" aria-label="Highlight cyan">●</button>
+    <button data-highlight="lime" title="Lime highlight" aria-label="Highlight lime">●</button>
+    <button id="selection-comment">✎ COMMENT</button>
+    <button id="selection-close" class="selection-close" title="Close" aria-label="Close selection tools">×</button>
+  </div>
+
+  <dialog id="entity-dialog" class="pixel-dialog"><form method="dialog" id="entity-form"><div id="entity-dialog-body"></div></form></dialog>
+  <dialog id="comment-dialog" class="pixel-dialog small-dialog"><form method="dialog" id="comment-form">
+    <h2>ADD COMMENT</h2><blockquote id="comment-quote"></blockquote>
+    <textarea id="comment-text" class="retro-textarea" rows="5" placeholder="Write your note..."></textarea>
+    <div class="dialog-actions"><button value="cancel" class="neo-btn small">CANCEL</button><button id="save-comment" value="default" class="neo-btn pink small">SAVE COMMENT</button></div>
+  </form></dialog>
+  <dialog id="command-dialog" class="pixel-dialog command-dialog" aria-label="Universal search"><form method="dialog">
+    <div class="command-search"><span aria-hidden="true">⌘</span><input id="command-input" autofocus autocomplete="off" placeholder="Search ideas, projects, tasks and skills..." aria-label="Search everything" /><button id="command-clear" type="button" class="command-icon" title="Clear" aria-label="Clear search">⌫</button><button id="command-close" type="button" class="command-icon close" title="Close search" aria-label="Close search">×</button></div>
+    <div class="command-toolbar"><div class="segmented command-filters" id="command-filters"><button type="button" class="active" data-command-filter="all">ALL</button><button type="button" data-command-filter="idea">IDEAS</button><button type="button" data-command-filter="project">PROJECTS</button><button type="button" data-command-filter="task">TASKS</button><button type="button" data-command-filter="skill">SKILLS</button></div><span id="command-count" class="muted"></span></div>
+    <div class="command-quick"><button type="button" data-command-action="new-task">＋ TASK</button><button type="button" data-command-action="new-idea">＋ IDEA</button><button type="button" data-command-action="planner">▦ PLANNER</button><span>↑↓ navigate · Enter open · Esc close</span></div>
+    <div id="command-results" class="command-results" role="listbox"></div>
+  </form></dialog>
+  <dialog id="project-dialog" class="pixel-dialog project-dialog"><form method="dialog"><div id="project-dialog-body"></div></form></dialog>
+  <dialog id="detail-dialog" class="pixel-dialog detail-dialog" aria-label="Item details"><div id="detail-dialog-body"></div></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+
+  <script>
+    window.PIXELVAULT_CONFIG = {
+      stateUrl: "{% url 'api_state' %}",
+      backupUrl: "{% url 'backup_export' %}",
+      healthUrl: "{% url 'api_health' %}",
+      reportPngUrl: "{% url 'report_png' %}",
+      reportPdfUrl: "{% url 'report_pdf' %}",
+      assetBase: "{% static 'pixelvault/assets/' %}",
+      version: "{{ pv_version }}"
+    };
+  </script>
+  <script src="{% static 'pixelvault/js/app.js' %}?v={{ pv_version }}"></script>
+</body>
+</html>
